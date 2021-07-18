@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using LocalMarket.Data.Models;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Xunit;
 using Xunit.Sdk;
@@ -20,10 +21,17 @@ namespace LocalMarket.Models.Product
         [Range(typeof(decimal), PriceMinValue, PriceMaxValue, ErrorMessage="The field price cannot be null")]
         public decimal Price { get; init; }
 
+        [Display(Name = "Unit")]
+
+        public int UnitId { get; set; }
+
+        public IEnumerable<UnitViewModel> Units { get; set; }
+
         [Required]
         [Url]
         public string ImageUrl { get; init; }
 
+        [Display(Name ="Category")]
         public int CategoryId { get; init; }
 
         public IEnumerable<CategoryViewModel> Categories { get; set; }

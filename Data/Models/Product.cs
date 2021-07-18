@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using static LocalMarket.Data.DataConstants;
 
 namespace LocalMarket.Data.Models
@@ -16,13 +17,18 @@ namespace LocalMarket.Data.Models
         [StringLength(DescriptionMaxLength, MinimumLength = DescriptionMinLength)]
         public string Description { get; set; }
 
-
+        [Column(TypeName = "decimal(18, 2)")]
         [Range(typeof(decimal), PriceMinValue, PriceMaxValue)]
         public decimal Price { get; set; }
+
+        public int UnitId { get; set; }
+
+        public Unit Unit { get; init; }
 
         [Required]
         [Url]
         public string ImageUrl { get; set; }
+
 
         public int CategoryId { get; set; }
 

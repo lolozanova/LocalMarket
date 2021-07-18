@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-
+using ReflectionIT.Mvc.Paging;
 
 namespace LocalMarket
 {
@@ -26,15 +26,18 @@ namespace LocalMarket
             services.AddDbContext<LocalMarketDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
+
             services.AddDatabaseDeveloperPageExceptionFilter();
 
             services.AddDefaultIdentity<IdentityUser>(options => {
                 options.Password.RequireUppercase = false;
                 options.Password.RequireNonAlphanumeric = false;
                 })
-            
                 .AddEntityFrameworkStores<LocalMarketDbContext>();
+
             services.AddControllersWithViews();
+
+          
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

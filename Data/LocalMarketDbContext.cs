@@ -16,13 +16,18 @@ namespace LocalMarket.Data
 
         public DbSet<Category> Categories { get; init; }
 
+        public DbSet<Unit> Units { get; init; }
+
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            base.OnModelCreating(builder);
-
+           
             builder.Entity<Product>()
                    .Property(p => p.Price)
-                   .HasColumnType("decimal");
+                   .HasColumnType("decimal(18,2)");
+
+            base.OnModelCreating(builder);
+
         }
     }
 }

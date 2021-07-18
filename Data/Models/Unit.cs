@@ -1,22 +1,21 @@
-﻿using System.Collections.Generic;
+﻿
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace LocalMarket.Data.Models
 {
-    public class Category
+    public class Unit
     {
-
-        public Category()
+        public Unit()
         {
-            this.Products = new HashSet<Product>();
+            Products = new HashSet<Product>();
         }
-
-        public int Id { get; init; }
-
+        public int Id { get; set; }
         [Required]
         [MaxLength(10)]
         public string Name { get; set; }
 
         public IEnumerable<Product> Products { get; set; }
+
     }
 }

@@ -22,6 +22,7 @@ namespace LocalMarket.Infrastructure
             data.Database.Migrate();
 
             SeedCategories(data);
+            SeedUnits(data);
 
             return app;
         }
@@ -42,6 +43,24 @@ namespace LocalMarket.Infrastructure
              new Category{Name = "Eggs" },
             new Category{Name = "Milk" },
              new Category{Name = "Nuts" }
+        });
+
+            data.SaveChanges();
+        }
+
+        private static void SeedUnits(LocalMarketDbContext data)
+        {
+            if (data.Units.Any())
+            {
+                return;
+            }
+            data.Units.AddRange(new[]
+              {
+
+            new Unit {Name = "kg" },
+            new Unit{Name = "piece" },
+            new Unit{Name = "ml" },
+            
         });
 
             data.SaveChanges();

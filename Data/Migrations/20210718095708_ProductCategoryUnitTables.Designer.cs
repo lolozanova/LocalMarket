@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LocalMarket.Data.Migrations
 {
     [DbContext(typeof(LocalMarketDbContext))]
-    [Migration("20210712080716_ProductAndCategoryTables")]
-    partial class ProductAndCategoryTables
+    [Migration("20210718095708_ProductCategoryUnitTables")]
+    partial class ProductCategoryUnitTables
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -29,7 +29,9 @@ namespace LocalMarket.Data.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.HasKey("Id");
 
@@ -61,13 +63,35 @@ namespace LocalMarket.Data.Migrations
                         .HasColumnType("nvarchar(25)");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("decimal");
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("UnitId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
 
+                    b.HasIndex("UnitId");
+
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("LocalMarket.Data.Models.Unit", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Units");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -278,7 +302,15 @@ namespace LocalMarket.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("LocalMarket.Data.Models.Unit", "Unit")
+                        .WithMany("Products")
+                        .HasForeignKey("UnitId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Category");
+
+                    b.Navigation("Unit");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -333,6 +365,11 @@ namespace LocalMarket.Data.Migrations
                 });
 
             modelBuilder.Entity("LocalMarket.Data.Models.Category", b =>
+                {
+                    b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("LocalMarket.Data.Models.Unit", b =>
                 {
                     b.Navigation("Products");
                 });
