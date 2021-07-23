@@ -4,7 +4,7 @@ namespace LocalMarket.Data
     public class DataConstants
     {
 
-        public class Car
+        public class Product
         {
             public const int NameMaxLength = 25;
 
@@ -15,6 +15,7 @@ namespace LocalMarket.Data
             public const string PriceMinValue = "0.01";
 
             public const string PriceMaxValue = "79228162514264337593543950335";
+
         }
 
         public class Producer
@@ -23,7 +24,7 @@ namespace LocalMarket.Data
 
             public const int NameMinLength = 3;
 
-            public const string PhoneNumberRegex = @"^[0-9]{10}$";
+            public const string PhoneNumberRegex = @"^+359[0-9]{9}$";
 
         }
 

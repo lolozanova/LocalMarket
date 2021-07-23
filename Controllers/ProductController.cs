@@ -4,6 +4,7 @@ using LocalMarket.Infrastructure;
 using LocalMarket.Models.Product;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -33,7 +34,7 @@ namespace LocalMarket.Controllers
                 Categories = this.GetProductCategories(),
                 Units = this.GetProductUnits()
 
-            }) ;
+            });
         }
 
         [HttpPost]
@@ -82,7 +83,7 @@ namespace LocalMarket.Controllers
                 UnitId = productModel.UnitId,
                 ImageUrl = productModel.ImageUrl,
                 CategoryId = productModel.CategoryId,
-              ProducerId = producerId
+                ProducerId = producerId
             };
 
             data.Products.Add(product);
@@ -92,42 +93,39 @@ namespace LocalMarket.Controllers
             return RedirectToAction("Index", "Home");
 
         }
-        public IActionResult All(int page=1)
+        public IActionResult All(AllProductsSearchModel searchModel)
         {
-            var products = data.Products
-                                .Select(p => new AllProductsViewModel
-                                {
-                                    Name = p.Name,
-                                    Description = p.Description,
-                                    Price = p.Price,
-                                    Unit = p.Unit.Name,
-                                    ImageUrl = p.ImageUrl
-                                })
-                                .ToList();
-            return View(products);
-        }
-        public IActionResult Search(string keyword)
-        {
-
             var productsAsQuaryable = data.Products.AsQueryable();
-            
-            if (!string.IsNullOrEmpty(keyword))
+
+            if (!string.IsNullOrEmpty(searchModel.Keyword))
             {
-                productsAsQuaryable = productsAsQuaryable.Where(p => p.Name.Contains(keyword.ToLower()) || p.Description.Contains(keyword.ToLower()));
-                          
+                productsAsQuaryable = productsAsQuaryable.Where(p => p.Name.Contains(searchModel.Keyword.ToLower()) || p.Description.Contains(searchModel.Keyword.ToLower()));
+
             }
+            var totalCars = productsAsQuaryable.Count();
 
-           var searchedProducts = productsAsQuaryable.Select(p => new AllProductsViewModel
+            var products = productsAsQuaryable
+                               .OrderBy(p => p.Name)
+                               .Skip((searchModel.CurrPage - 1) * AllProductsSearchModel.ProductsPerPage)
+                               .Take(AllProductsSearchModel.ProductsPerPage)
+                               .Select(p => new AllProductsViewModel
+                               {
+                                   Name = p.Name,
+                                   Description = p.Description,
+                                   Price = p.Price,
+                                   Unit = p.Unit.Name,
+                                   ImageUrl = p.ImageUrl
+                               })
+                                .ToList();
+
+            var searchProducts = new AllProductsSearchModel
             {
-                Name = p.Name,
-                CategotyId = p.CategoryId,
-                Description = p.Description,
-                ImageUrl = p.ImageUrl,
-                Price = p.Price
-            })
-                .ToList();
+                Keyword = searchModel.Keyword,
+                Products = products,
+                TotalPages = (int)Math.Ceiling((double)totalCars / AllProductsSearchModel.ProductsPerPage)
 
-            return View(searchedProducts);
+            };
+            return View(searchProducts);
         }
 
         private IEnumerable<CategoryViewModel> GetProductCategories()

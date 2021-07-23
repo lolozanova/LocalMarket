@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace LocalMarket.Controllers
 {
-    public class ProducerController:Controller
+    public class ProducerController : Controller
     {
         private readonly LocalMarketDbContext data;
 
@@ -22,8 +22,8 @@ namespace LocalMarket.Controllers
         [Authorize]
         public IActionResult Create()
         {
-           
-            return View(new CreateProducerFormModel {Towns = GetTowns() });
+
+            return View(new CreateProducerFormModel { Towns = GetTowns() });
         }
 
         [HttpPost]
@@ -31,10 +31,10 @@ namespace LocalMarket.Controllers
         public IActionResult Create(CreateProducerFormModel producerFormModel)
         {
 
-           var userId = User.GetId();
+            var userId = User.GetId();
 
-           var userIsProducer = data.Producers
-                                    .Any(p => p.UserId == userId);
+            var userIsProducer = data.Producers
+                                     .Any(p => p.UserId == userId);
 
             if (userIsProducer)
             {
@@ -60,7 +60,7 @@ namespace LocalMarket.Controllers
                 PhoneNumber = producerFormModel.PhoneNumber,
                 UserId = userId,
                 TownId = producerFormModel.TownId,
-               
+
             };
 
             data.Producers.Add(producer);
@@ -78,7 +78,8 @@ namespace LocalMarket.Controllers
                                         Id = t.Id,
                                         Name = t.Name
                                     })
-                                    .ToList();
+                                  .OrderBy(t => t.Name)
+                                  .ToList();
 
             return towns;
         }

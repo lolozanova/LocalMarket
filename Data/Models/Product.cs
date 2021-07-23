@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using static LocalMarket.Data.DataConstants.Car;
+using static LocalMarket.Data.DataConstants.Product;
 
 namespace LocalMarket.Data.Models
 {

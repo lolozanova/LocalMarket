@@ -2,11 +2,13 @@
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
 
+
 <ul class="navbar-nav">
     @if (SignInManager.IsSignedIn(User))
     {
+     
         <li class="nav-item">
-            <a class="nav-link text-dark btn-outline-success" asp-area="" asp-controller="Producer" asp-action="Create">I'm producer</a>
+            <a class="nav-link text-white btn-outline-success my-2 my-sm-0" asp-area="" asp-controller="Producer" asp-action="Create">I'm producer</a>
         </li>
         <li class="nav-item">
             <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage"><i class="fas fa-user"></i></a>
