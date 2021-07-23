@@ -1,9 +1,12 @@
 ﻿using LocalMarket.Data;
 using LocalMarket.Data.Models;
+using LocalMarket.Infrastructure;
 using LocalMarket.Models.Product;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 
 namespace LocalMarket.Controllers
 {
@@ -16,8 +19,15 @@ namespace LocalMarket.Controllers
             data = dbcontext;
         }
 
+        [Authorize]
         public IActionResult Add()
         {
+
+            if (!IsProducer())
+            {
+                return Redirect("/Producer/Create");
+            }
+
             return View(new AddProductFormModel
             {
                 Categories = this.GetProductCategories(),
@@ -27,8 +37,14 @@ namespace LocalMarket.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public IActionResult Add(AddProductFormModel productModel)
         {
+            if (!IsProducer())
+            {
+                return Redirect("/Producer/Create");
+            }
+
             if (!data.Categories.Any(c => c.Id == productModel.CategoryId))
             {
                 ModelState.AddModelError("CategoryId", "Category is not valid");
@@ -47,6 +63,17 @@ namespace LocalMarket.Controllers
                 return View(productModel);
             }
 
+            var producerId = this.data
+              .Producers
+              .Where(p => p.UserId == this.User.GetId())
+              .Select(p => p.Id)
+              .FirstOrDefault();
+
+            if (producerId == 0)
+            {
+                return RedirectToAction("Create", "Producer");
+            }
+
             var product = new Product
             {
                 Name = productModel.Name,
@@ -54,7 +81,8 @@ namespace LocalMarket.Controllers
                 Price = productModel.Price,
                 UnitId = productModel.UnitId,
                 ImageUrl = productModel.ImageUrl,
-                CategoryId = productModel.CategoryId
+                CategoryId = productModel.CategoryId,
+              ProducerId = producerId
             };
 
             data.Products.Add(product);
@@ -126,6 +154,12 @@ namespace LocalMarket.Controllers
                                     .ToList();
 
             return units;
+        }
+
+        private bool IsProducer()
+        {
+            return data.Producers
+                        .Any(p => p.UserId == this.User.GetId());
         }
 
 

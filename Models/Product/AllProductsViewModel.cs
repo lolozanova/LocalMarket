@@ -2,7 +2,7 @@
 {
     public class AllProductsViewModel
     {
-        public const int ProductPerPage = 8;
+       
         public string Name { get; init; }
 
         public string Description { get; init; }
@@ -15,6 +15,5 @@
 
         public int CategotyId { get; init; }
 
-        public int CurrentPage { get; set; }
     }
 }

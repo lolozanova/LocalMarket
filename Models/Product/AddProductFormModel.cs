@@ -1,9 +1,6 @@
-﻿using LocalMarket.Data.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Xunit;
-using Xunit.Sdk;
-using static LocalMarket.Data.DataConstants;
+using static LocalMarket.Data.DataConstants.Car;
 
 namespace LocalMarket.Models.Product
 {

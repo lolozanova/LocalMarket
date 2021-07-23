@@ -39,7 +39,7 @@
 
 
         </nav>
-        
+
     </header>
 
     <div class="container">
@@ -48,20 +48,29 @@
         </main>
     </div>
 
-        <footer class="border-top footer text-muted bg-info">
-            <div class="container">
-                &copy; @DateTime.UtcNow.Year  - LocalMarket - <a asp-area="" asp-controller="Home"></a> Copyright OldWorld by Anonymous.
-            </div>
-            <div>
-                <i class="fab fa-facebook-f"></i>
-                <i class="fab fa-instagram"></i>
-                <i class="fab fa-twitter"></i>
+    <footer class="border-top footer text-black-50 bg-info">
+        <div class="container">
+            &copy; @DateTime.UtcNow.Year  - LocalMarket - <a asp-area="" asp-controller="Home"></a> Copyright by Enthusiast.
+        </div>
+        <div>
+            <p>
+                You can follow us at: 
+                <a href="https://www.facebook.com">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="https://www.instagram.com">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="https://www.twitter.com">
+                    <i class="fab fa-twitter"></i>
+                </a>
+            </p>
 
-            </div>
-        </footer>
-        <script src="~/lib/jquery/dist/jquery.min.js"></script>
-        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="~/js/site.js" asp-append-version="true"></script>
-        @await RenderSectionAsync("Scripts", required: false)
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

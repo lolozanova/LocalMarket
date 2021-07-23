@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using static LocalMarket.Data.DataConstants;
+using static LocalMarket.Data.DataConstants.Car;
 
 namespace LocalMarket.Data.Models
 {
@@ -29,6 +29,9 @@ namespace LocalMarket.Data.Models
         [Url]
         public string ImageUrl { get; set; }
 
+        public int ProducerId { get; set; }
+
+        public Producer Producer { get; set; }
 
         public int CategoryId { get; set; }
 
