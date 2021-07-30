@@ -1,15 +1,36 @@
 ﻿@using Microsoft.AspNetCore.Identity
+@using LocalMarket.Services.Producer
+
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
+@inject IProducerService service
 
 
 <ul class="navbar-nav">
     @if (SignInManager.IsSignedIn(User))
     {
-     
-        <li class="nav-item">
-            <a class="nav-link text-white btn-outline-success my-2 my-sm-0" asp-area="" asp-controller="Producer" asp-action="Create">I'm producer</a>
-        </li>
+
+        var userId = User.GetId();
+        var UserIsProducer = service.IsProducer(userId);
+
+        @if (!UserIsProducer)
+        {
+            <li class="nav-item">
+                <a class="nav-link text-white btn-outline-success my-2 my-sm-0" asp-area="" asp-controller="Producer" asp-action="Create">I'm producer</a>
+            </li>
+
+        }
+        else
+        {
+            <li class="nav-item">
+                <a class="nav-link  text-uppercase text-dark" asp-area="" asp-controller="Product" asp-action="Add">Add Product</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link  text-uppercase text-dark" asp-area="" asp-controller="Product" asp-action="Mine" asp-route-userId=@userId>Mine Products</a>
+            </li>
+
+        }
+
         <li class="nav-item">
             <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage"><i class="fas fa-user"></i></a>
         </li>

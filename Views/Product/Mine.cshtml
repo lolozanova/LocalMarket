@@ -1,0 +1,9 @@
+﻿@model List<ProductViewModel>
+
+
+@{
+    ViewData["Title"] = "Your products";
+    ViewBag.IsProducer = true;
+}
+
+<partial name="_ListedProductsPartial" model=@Model />

@@ -1,4 +1,11 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+@using LocalMarket.Services.Producer
+
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+@inject IProducerService service
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -20,14 +27,12 @@
                                 LocalMarket
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link  text-uppercase text-dark" asp-area="" asp-controller="Product" asp-action="Add">Add Product</a>
-                        </li>
+
                         <li class="nav-item">
                             <a class="nav-link  text-uppercase text-dark" asp-area="" asp-controller="Product" asp-action="All">Products</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link  text-uppercase text-dark" asp-area="" asp-controller="Product" asp-action="All">Our Producers</a>
+                            <a class="nav-link  text-uppercase text-dark" asp-area="" asp-controller="Producer" asp-action="All">Our Producers</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link  text-uppercase text-dark" asp-area="" asp-controller="Home" asp-action="AboutUs">About us</a>
@@ -55,7 +60,7 @@
         </div>
         <div>
             <p>
-                You can follow us at: 
+                You can follow us at:
                 <a href="https://www.facebook.com">
                     <i class="fab fa-facebook-f"></i>
                 </a>

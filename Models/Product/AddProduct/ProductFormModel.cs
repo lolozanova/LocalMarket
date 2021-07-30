@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using LocalMarket.Services.Products;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using static LocalMarket.Data.DataConstants.Product;
 
-namespace LocalMarket.Models.Product
+namespace LocalMarket.Models.Product.AddProduct
 {
-    public class AddProductFormModel
+    public class ProductFormModel
     {
         [Required]
         [MaxLength(NameMaxLength)]
@@ -22,7 +23,9 @@ namespace LocalMarket.Models.Product
 
         public int UnitId { get; set; }
 
-        public IEnumerable<UnitViewModel> Units { get; set; }
+        public string UnitName { get; set; }
+
+        public IEnumerable<UnitServiceModel> Units { get; set; }
 
         [Required]
         [Url]
@@ -31,7 +34,11 @@ namespace LocalMarket.Models.Product
         [Display(Name ="Category")]
         public int CategoryId { get; init; }
 
-        public IEnumerable<CategoryViewModel> Categories { get; set; }
+        public string CategoryName { get; set; }
+
+        public IEnumerable<CategoryServiceModel> Categories { get; set; }
+
+        public int ProducerId { get; set; }
 
     }
 }

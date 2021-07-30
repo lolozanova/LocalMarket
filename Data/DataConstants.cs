@@ -24,7 +24,7 @@ namespace LocalMarket.Data
 
             public const int NameMinLength = 3;
 
-            public const string PhoneNumberRegex = @"^+359[0-9]{9}$";
+            public const string PhoneNumberRegex = @"^[0-9]{10}$";
 
         }
 

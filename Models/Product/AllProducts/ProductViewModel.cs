@@ -1,8 +1,8 @@
-﻿namespace LocalMarket.Models.Product
+﻿namespace LocalMarket.Models.Product.AllProducts
 {
-    public class AllProductsViewModel
+    public class ProductViewModel
     {
-       
+        public int Id { get; init; }
         public string Name { get; init; }
 
         public string Description { get; init; }

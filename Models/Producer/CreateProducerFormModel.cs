@@ -21,6 +21,10 @@ namespace LocalMarket.Models.Producer
          [Display(Name = "Phone Number")]
         public string PhoneNumber { get; set; }
 
+        [Required]
+        public string AboutMe { get; set; }
+
+        [Display(Name = "Town")]
         public int TownId { get; set; }
 
         public IEnumerable<TownViewModel> Towns { get; set; }

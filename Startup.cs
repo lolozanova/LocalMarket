@@ -1,5 +1,8 @@
 using LocalMarket.Data;
 using LocalMarket.Infrastructure;
+using LocalMarket.Services.Producer;
+using LocalMarket.Services.Products;
+using LocalMarket.Services.Statistics;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 
@@ -28,7 +31,7 @@ namespace LocalMarket
                     Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddDatabaseDeveloperPageExceptionFilter();
-
+            
             services.AddDefaultIdentity<IdentityUser>(options => {
                 options.Password.RequireUppercase = false;
                 options.Password.RequireNonAlphanumeric = false;
@@ -37,7 +40,14 @@ namespace LocalMarket
 
             services.AddControllersWithViews();
 
-          
+            services.AddTransient<IStatisticService, StatisticService>();
+
+            services.AddTransient<IProductService, ProductService>();
+
+            services.AddTransient<IProducerService, ProducerService>();
+
+
+
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

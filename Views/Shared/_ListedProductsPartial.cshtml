@@ -1,0 +1,30 @@
+﻿@model List<ProductViewModel>
+ 
+
+    <div class="mb-5"></div>
+    <div class="row">
+
+        @foreach (var product in Model)
+        {
+            <div class="col-3">
+                <div class="card bg-light">
+                    <img class="card-img-top" src="@product.ImageUrl" alt="@product.Name">
+                    <div class="card-body">
+                        <h5 class="card-title">@product.Name</h5>
+                        <p class="card-text">@product.Price  &euro;/@product.Unit </p>
+
+                        @if (ViewBag.IsProducer == true)
+                        {
+                            <a asp-controller="Product" asp-action="Edit" asp-route-productId=@product.Id  class="btn btn-outline-success">Edit</a>
+                            <a class="btn btn-outline-danger">Delete</a>
+                        }
+                        else
+                        {
+                            <a href="#" class="btn btn-outline-success">Add to basket</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+    </div>

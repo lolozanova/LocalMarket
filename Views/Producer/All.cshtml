@@ -1,0 +1,23 @@
+﻿@model List<ProducerViewModel>
+
+
+<div class="mb-5"></div>
+<div class="row">
+
+    @foreach (var producer in @Model)
+    {
+        <div class="col-3">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h5 class="card-title">@(producer.FullName)</h5>
+                    <p class="card-text">@producer.Town </p>
+                    <p class="card-text">@producer.AboutMe </p>
+                    <p class="lead">
+                        <a class="btn btn-primary btn-lg" asp-controller="Product" asp-action="Mine" asp-route-userId=@producer.UserId  role="button">See all products</a>
+                    </p>
+
+                </div>
+            </div>
+        </div>
+    }
+    </div>

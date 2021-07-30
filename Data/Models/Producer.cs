@@ -26,6 +26,9 @@ namespace LocalMarket.Data.Models
         public string LastName { get; set; }
 
         [Required]
+        public string AboutMe { get; set; }
+
+        [Required]
         public string PhoneNumber { get; set; }
 
         public int TownId { get; set; }

@@ -1,0 +1,48 @@
+﻿@model ProductFormModel
+
+<form method="post">
+    <div class="form-group">
+        <label asp-for="Name">Name</label>
+        <input asp-for="Name" class="form-control">
+        <span asp-validation-for="Name" class="small text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Description">Description</label>
+        <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+        <span asp-validation-for="Description" class="small text-danger"></span>
+
+    </div>
+    <div class="form-group">
+        <label asp-for="Price">Price</label>
+        <input asp-for="Price" type="number" step=".01" class="form-control">
+        <span asp-validation-for="Price" class="small text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="ImageUrl">Image</label>
+        <input asp-for="ImageUrl" class="form-control">
+        <span asp-validation-for="ImageUrl" class="small text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="CategoryId"></label>
+        <select asp-for="CategoryId" class="form-control">
+            @foreach (var category in Model.Categories)
+            {
+                <option value="@category.Id">@category.Name</option>
+            }
+        </select>
+        <span asp-validation-for="CategoryId" class="small text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="UnitId"></label>
+        <select asp-for="UnitId" class="form-control">
+            @foreach (var unit in @Model.Units)
+            {
+                <option value="@unit.Id">@unit.Name</option>
+
+            }
+        </select>
+        <span asp-validation-for="UnitId" class="small text-danger"></span>
+    </div>
+    <input class="btn btn-primary" type="submit" value="Submit" />
+</form>

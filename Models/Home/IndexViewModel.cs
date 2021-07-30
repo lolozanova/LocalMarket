@@ -3,7 +3,7 @@
     public class IndexViewModel
     {
 
-        public int GrowersCount { get; set; } = 10;
+        public int ProducersCount { get; set; }
 
         public int ProductsCount { get; set; }
 

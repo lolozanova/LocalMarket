@@ -1,13 +1,14 @@
 ﻿using LocalMarket.Data;
 using LocalMarket.Data.Models;
 using LocalMarket.Infrastructure;
-using LocalMarket.Models.Product;
+using LocalMarket.Models.Product.AddProduct;
+using LocalMarket.Models.Product.AllProducts;
+using LocalMarket.Services.Producer;
+using LocalMarket.Services.Products;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 
 namespace LocalMarket.Controllers
 {
@@ -15,85 +16,150 @@ namespace LocalMarket.Controllers
     {
         private readonly LocalMarketDbContext data;
 
-        public ProductController(LocalMarketDbContext dbcontext)
+        private readonly IProducerService producerService;
+
+        private readonly IProductService productService;
+
+        public ProductController(LocalMarketDbContext dbcontext, IProducerService _producerService, IProductService _productService)
         {
             data = dbcontext;
+            producerService = _producerService;
+            productService = _productService;
         }
 
         [Authorize]
         public IActionResult Add()
         {
 
-            if (!IsProducer())
+            if (!producerService.IsProducer(User.GetId()))
             {
                 return Redirect("/Producer/Create");
             }
 
-            return View(new AddProductFormModel
+            return View(new ProductFormModel
             {
-                Categories = this.GetProductCategories(),
-                Units = this.GetProductUnits()
+                Categories = productService.GetProductCategories(),
+                Units = productService.GetProductUnits()
 
-            });
+            }); ;
         }
 
         [HttpPost]
         [Authorize]
-        public IActionResult Add(AddProductFormModel productModel)
+        public IActionResult Add(ProductFormModel productModel)
         {
-            if (!IsProducer())
+            if (!producerService.IsProducer(User.GetId()))
             {
                 return Redirect("/Producer/Create");
             }
 
-            if (!data.Categories.Any(c => c.Id == productModel.CategoryId))
+            if (!productService.CategoryExist(productModel.CategoryId))
             {
                 ModelState.AddModelError("CategoryId", "Category is not valid");
             }
 
-            if (!data.Units.Any(c => c.Id == productModel.UnitId))
+            if (!productService.UnitExist(productModel.UnitId))
             {
                 ModelState.AddModelError("UnitId", "Unit is not valid");
             }
 
             if (!ModelState.IsValid)
             {
-                productModel.Categories = this.GetProductCategories();
-                productModel.Units = this.GetProductUnits();
-
+                productModel.Categories = productService.GetProductCategories();
+                productModel.Units = productService.GetProductUnits();
                 return View(productModel);
             }
 
-            var producerId = this.data
-              .Producers
-              .Where(p => p.UserId == this.User.GetId())
-              .Select(p => p.Id)
-              .FirstOrDefault();
+            var producerId = producerService.GetProducerById(User.GetId());
 
             if (producerId == 0)
             {
                 return RedirectToAction("Create", "Producer");
             }
 
-            var product = new Product
-            {
-                Name = productModel.Name,
-                Description = productModel.Description,
-                Price = productModel.Price,
-                UnitId = productModel.UnitId,
-                ImageUrl = productModel.ImageUrl,
-                CategoryId = productModel.CategoryId,
-                ProducerId = producerId
-            };
-
-            data.Products.Add(product);
-
-            data.SaveChanges();
+                productService.Create(productModel.Name,
+                productModel.Description,
+                productModel.Price,
+                productModel.UnitId,
+                productModel.ImageUrl,
+                productModel.CategoryId,
+                producerId
+                );
 
             return RedirectToAction("Index", "Home");
 
         }
-        public IActionResult All(AllProductsSearchModel searchModel)
+
+        [Authorize]
+        public IActionResult Edit(int productId)
+        {
+            if (!producerService.IsProducer(User.GetId()))
+            {
+                return Redirect("/Producer/Create");
+            }
+
+           
+            var product = data.Products
+                .Where(p => p.Id == productId)
+                .Select(p => new ProductFormModel
+                {
+                    Name = p.Name,
+                    Description = p.Description,
+                    Price = p.Price,
+                    ImageUrl = p.ImageUrl,
+                    UnitId = p.UnitId,
+                    UnitName = p.Unit.Name,
+                    CategoryId = p.CategoryId,
+                    CategoryName = p.Category.Name,
+                    ProducerId = p.ProducerId
+                })
+                .FirstOrDefault();
+
+            product.Categories = productService.GetProductCategories();
+            product.Units = productService.GetProductUnits();
+
+            return View(product);
+        }
+
+        [Authorize]
+        [HttpPost]
+        public IActionResult Edit(int productId, ProductFormModel productModel)
+        {
+            if (!producerService.IsProducer(User.GetId()))
+            {
+                return Redirect("/Producer/Create");
+            }
+           
+            if (!productService.CategoryExist(productModel.CategoryId))
+            {
+                ModelState.AddModelError("CategoryId", "Category is not valid");
+            }
+
+            if (!productService.UnitExist(productModel.UnitId))
+            {
+                ModelState.AddModelError("UnitId", "Unit is not valid");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                productModel.Categories = productService.GetProductCategories();
+                productModel.Units = productService.GetProductUnits();
+                return View(productModel);
+            }
+
+         int producerId = producerService.GetProducerById(User.GetId());
+
+            var successfulEdited = productService.Edit(productId, productModel.Name,productModel.Description,productModel.Price, productModel.UnitId, productModel.ImageUrl, productModel.CategoryId, producerId );
+
+            if (!successfulEdited)
+            {
+                return BadRequest();
+            }
+
+            return RedirectToAction("Mine", "Product", new { userId=User.GetId()});
+        }
+
+        public IActionResult All(AllProductsServiceSearchModel searchModel)
         {
             var productsAsQuaryable = data.Products.AsQueryable();
 
@@ -102,13 +168,13 @@ namespace LocalMarket.Controllers
                 productsAsQuaryable = productsAsQuaryable.Where(p => p.Name.Contains(searchModel.Keyword.ToLower()) || p.Description.Contains(searchModel.Keyword.ToLower()));
 
             }
-            var totalCars = productsAsQuaryable.Count();
+            var totalProducts = productsAsQuaryable.Count();
 
             var products = productsAsQuaryable
                                .OrderBy(p => p.Name)
                                .Skip((searchModel.CurrPage - 1) * AllProductsSearchModel.ProductsPerPage)
                                .Take(AllProductsSearchModel.ProductsPerPage)
-                               .Select(p => new AllProductsViewModel
+                               .Select(p => new ProductViewModel
                                {
                                    Name = p.Name,
                                    Description = p.Description,
@@ -122,43 +188,37 @@ namespace LocalMarket.Controllers
             {
                 Keyword = searchModel.Keyword,
                 Products = products,
-                TotalPages = (int)Math.Ceiling((double)totalCars / AllProductsSearchModel.ProductsPerPage)
+                TotalPages = (int)Math.Ceiling((double)totalProducts / Services.Products.AllProductsServiceSearchModel.ProductsPerPage)
 
             };
             return View(searchProducts);
         }
 
-        private IEnumerable<CategoryViewModel> GetProductCategories()
+        [Authorize]
+        public IActionResult Mine(string userId)
         {
-            var categories = data.Categories
-                                    .Select(c => new CategoryViewModel
-                                    {
-                                        Id = c.Id,
-                                        Name = c.Name
-                                    })
-                                    .ToList();
+            var products = data.Products
+                              .OrderBy(p => p.Name)
+                              .Where(p=>p.Producer.UserId == userId)
+                              .Select(p => new ProductViewModel
+                              {
+                                  Id = p.Id,
+                                  Name = p.Name,
+                                  Description = p.Description,
+                                  Price = p.Price,
+                                  Unit = p.Unit.Name,
+                                  ImageUrl = p.ImageUrl
+                              })
+                               .ToList();
 
-            return categories;
+            return View(products);
         }
 
-        private IEnumerable<UnitViewModel> GetProductUnits()
-        {
-            var units = data.Units
-                                    .Select(c => new UnitViewModel
-                                    {
-                                        Id = c.Id,
-                                        Name = c.Name
-                                    })
-                                    .ToList();
+       
 
-            return units;
-        }
+     
 
-        private bool IsProducer()
-        {
-            return data.Producers
-                        .Any(p => p.UserId == this.User.GetId());
-        }
+      
 
 
     }

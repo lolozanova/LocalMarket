@@ -2,6 +2,7 @@
 using LocalMarket.Data.Models;
 using LocalMarket.Infrastructure;
 using LocalMarket.Models.Producer;
+using LocalMarket.Models.Producer.All;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -58,6 +59,7 @@ namespace LocalMarket.Controllers
                 FirstName = producerFormModel.FirstName,
                 LastName = producerFormModel.LastName,
                 PhoneNumber = producerFormModel.PhoneNumber,
+                AboutMe = producerFormModel.AboutMe,
                 UserId = userId,
                 TownId = producerFormModel.TownId,
 
@@ -68,6 +70,19 @@ namespace LocalMarket.Controllers
             data.SaveChanges();
 
             return RedirectToAction("Add", "Product");
+        }
+
+        public IActionResult All()
+        {
+           var producers = data.Producers.Select(p => new ProducerViewModel
+            {
+                FullName = p.FirstName + " " + p.LastName,
+                Town = p.Town.Name,
+                AboutMe = p.AboutMe,
+
+            }).ToList();
+
+            return View(producers);
         }
 
         private IEnumerable<TownViewModel> GetTowns()
