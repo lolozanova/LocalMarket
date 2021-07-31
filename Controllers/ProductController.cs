@@ -93,7 +93,7 @@ namespace LocalMarket.Controllers
         [Authorize]
         public IActionResult Edit(int productId)
         {
-            if (!producerService.IsProducer(User.GetId()))
+            if (!producerService.IsProducer(User.GetId()) && !User.IsInRole("Admin"))
             {
                 return Redirect("/Producer/Create");
             }
@@ -125,7 +125,7 @@ namespace LocalMarket.Controllers
         [HttpPost]
         public IActionResult Edit(int productId, ProductFormModel productModel)
         {
-            if (!producerService.IsProducer(User.GetId()))
+            if (!producerService.IsProducer(User.GetId()) && User.IsInRole("Admin"))
             {
                 return Redirect("/Producer/Create");
             }
@@ -157,6 +157,21 @@ namespace LocalMarket.Controllers
             }
 
             return RedirectToAction("Mine", "Product", new { userId=User.GetId()});
+        }
+
+        [Authorize]
+        
+        public IActionResult Delete(int productId)
+        {
+            if (!producerService.IsProducer(User.GetId()) && User.IsInRole("Admin"))
+            {
+                return Redirect("/Producer/Create");
+            }
+
+            productService.Delete(productId);
+            
+
+            return RedirectToAction("Mine", "Product", new { userId = User.GetId() });
         }
 
         public IActionResult All(AllProductsServiceSearchModel searchModel)

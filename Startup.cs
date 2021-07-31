@@ -1,4 +1,5 @@
 using LocalMarket.Data;
+using LocalMarket.Data.Models;
 using LocalMarket.Infrastructure;
 using LocalMarket.Services.Producer;
 using LocalMarket.Services.Products;
@@ -32,10 +33,11 @@ namespace LocalMarket
 
             services.AddDatabaseDeveloperPageExceptionFilter();
             
-            services.AddDefaultIdentity<IdentityUser>(options => {
+            services.AddDefaultIdentity<User>(options => {
                 options.Password.RequireUppercase = false;
                 options.Password.RequireNonAlphanumeric = false;
                 })
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<LocalMarketDbContext>();
 
             services.AddControllersWithViews();

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LocalMarket.Data
 {
-    public class LocalMarketDbContext : IdentityDbContext
+    public class LocalMarketDbContext : IdentityDbContext<User>
     {
         public LocalMarketDbContext(DbContextOptions<LocalMarketDbContext> options)
             : base(options)
@@ -31,7 +31,7 @@ namespace LocalMarket.Data
                    .HasColumnType("decimal(18,2)");
 
             builder.Entity<Producer>()
-                .HasOne<IdentityUser>()
+                .HasOne<User>()
                 .WithOne()
                 .HasForeignKey<Producer>(p => p.UserId)
                   .OnDelete(DeleteBehavior.Restrict);

@@ -1,6 +1,7 @@
 ﻿using LocalMarket.Data;
 using LocalMarket.Data.Models;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -16,8 +17,9 @@ namespace LocalMarket.Infrastructure
         {
 
             using var scopedServices = app.ApplicationServices.CreateScope();
+            var serviceProvider = scopedServices.ServiceProvider;
 
-            var data = scopedServices.ServiceProvider.GetService<LocalMarketDbContext>();
+            var data = serviceProvider.GetRequiredService<LocalMarketDbContext>();
 
             data.Database.Migrate();
 
@@ -26,6 +28,8 @@ namespace LocalMarket.Infrastructure
             SeedUnits(data);
 
             SeedTowns(data);
+
+            SeedAdmin(serviceProvider);
 
             return app;
         }
@@ -106,6 +110,39 @@ namespace LocalMarket.Infrastructure
         });
 
             data.SaveChanges();
+        }
+
+        private static void SeedAdmin(IServiceProvider service)
+        {
+            var userManager = service.GetRequiredService<UserManager<User>>();
+            var roleManager = service.GetRequiredService<RoleManager<IdentityRole>>();
+
+            Task.Run(async () =>
+            {
+                if (await roleManager.RoleExistsAsync("Admin"))
+                {
+                    return;
+                }
+
+                var role = new IdentityRole { Name = "Admin" };
+
+                await roleManager.CreateAsync(role);
+
+                var user = new User
+                {
+                    Email = "admin@admin.com",
+                    UserName = "admin@admin.com",
+                    FirstName = "Admin",
+                    LastName = "Admin"
+                };
+
+                await userManager.CreateAsync(user, "admin123");
+
+                await userManager.AddToRoleAsync(user, role.Name);
+            })
+                .GetAwaiter()
+                .GetResult();
+
         }
     }
 }

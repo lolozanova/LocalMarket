@@ -125,5 +125,14 @@ namespace LocalMarket.Services.Products
 
             return true;
         }
+
+        public void Delete(int id)
+        {
+            var product = data.Products.FirstOrDefault(p => p.Id == id);
+
+            data.Remove(product);
+
+            data.SaveChanges();
+        }
     }
 }

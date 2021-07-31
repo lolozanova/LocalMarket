@@ -13,10 +13,10 @@
                         <h5 class="card-title">@product.Name</h5>
                         <p class="card-text">@product.Price  &euro;/@product.Unit </p>
 
-                        @if (ViewBag.IsProducer == true)
+                        @if (ViewBag.IsProducer == true || User.IsInRole("Admin"))
                         {
                             <a asp-controller="Product" asp-action="Edit" asp-route-productId=@product.Id  class="btn btn-outline-success">Edit</a>
-                            <a class="btn btn-outline-danger">Delete</a>
+                            <a asp-controller="Product" asp-action="Delete" asp-route-productId=@product.Id class="btn btn-outline-danger">Delete</a>
                         }
                         else
                         {

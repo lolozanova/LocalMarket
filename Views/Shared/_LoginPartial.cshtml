@@ -1,8 +1,9 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using LocalMarket.Services.Producer
+@using LocalMarket.Data.Models
 
-@inject SignInManager<IdentityUser> SignInManager
-@inject UserManager<IdentityUser> UserManager
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
 @inject IProducerService service
 
 
@@ -13,14 +14,14 @@
         var userId = User.GetId();
         var UserIsProducer = service.IsProducer(userId);
 
-        @if (!UserIsProducer)
+        @if (!UserIsProducer && !User.IsInRole("Admin"))
         {
             <li class="nav-item">
                 <a class="nav-link text-white btn-outline-success my-2 my-sm-0" asp-area="" asp-controller="Producer" asp-action="Create">I'm producer</a>
             </li>
 
         }
-        else
+        else if(UserIsProducer && !User.IsInRole("Admin"))
         {
             <li class="nav-item">
                 <a class="nav-link  text-uppercase text-dark" asp-area="" asp-controller="Product" asp-action="Add">Add Product</a>

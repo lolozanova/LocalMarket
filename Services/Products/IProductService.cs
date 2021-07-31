@@ -37,5 +37,7 @@ namespace LocalMarket.Services.Products
                int producerId
              );
 
+        public void Delete(int id);
+
     }
 }

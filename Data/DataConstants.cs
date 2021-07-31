@@ -3,7 +3,17 @@ namespace LocalMarket.Data
 {
     public class DataConstants
     {
+        public class User
+        {
+            public const int FirstNameMaxLength = 25;
+            public const int FirstNameMinLength = 2;
+            public const int LastNameMaxLength = 25;
+            public const int LastNameMinLength = 3;
+            public const int PasswordMaxLength = 30;
+            public const int PasswordMinLength = 8;
 
+
+        }
         public class Product
         {
             public const int NameMaxLength = 25;
