@@ -17,7 +17,7 @@ namespace LocalMarket.Services.Products
 
         public int UnitId { get; init; }
 
-        public string Unit { get; set; }
+        public string UnitName { get; set; }
 
         public IEnumerable<UnitServiceModel> Units { get; set; }
 
@@ -25,8 +25,10 @@ namespace LocalMarket.Services.Products
 
         public int CategoryId { get; init; }
 
-        public string Category { get; init; }
+        public string CategoryName { get; init; }
 
         public IEnumerable<CategoryServiceModel> Categories { get; set; }
+
+        public int ProducerId { get; init; }
     }
 }

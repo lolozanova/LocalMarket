@@ -1,8 +1,10 @@
-﻿using LocalMarket.Data;
+﻿using AutoMapper;
+using LocalMarket.Data;
 using LocalMarket.Data.Models;
 using LocalMarket.Infrastructure;
 using LocalMarket.Models.Producer;
 using LocalMarket.Models.Producer.All;
+using LocalMarket.Services.Producer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -15,16 +17,22 @@ namespace LocalMarket.Controllers
     {
         private readonly LocalMarketDbContext data;
 
-        public ProducerController(LocalMarketDbContext dbContext)
+        private readonly IProducerService service;
+
+        private readonly IMapper mapper;
+
+        public ProducerController(LocalMarketDbContext dbContext, IProducerService prodservice, IMapper automapper)
         {
             data = dbContext;
+            service = prodservice;
+            mapper = automapper;
         }
 
         [Authorize]
         public IActionResult Create()
         {
 
-            return View(new CreateProducerFormModel { Towns = GetTowns() });
+            return View(new CreateProducerFormModel { Towns = service.GetTowns() });
         }
 
         [HttpPost]
@@ -42,28 +50,21 @@ namespace LocalMarket.Controllers
                 return BadRequest();
             }
 
-            if (!data.Towns.Any(c => c.Id == producerFormModel.TownId))
+            if (!service.TownExists(producerFormModel.TownId))
             {
                 ModelState.AddModelError("TownId", "Town is not valid");
             }
 
             if (!ModelState.IsValid)
             {
-                producerFormModel.Towns = this.GetTowns();
+                producerFormModel.Towns = service.GetTowns();
 
                 return View(producerFormModel);
             }
 
-            var producer = new Producer
-            {
-                FirstName = producerFormModel.FirstName,
-                LastName = producerFormModel.LastName,
-                PhoneNumber = producerFormModel.PhoneNumber,
-                AboutMe = producerFormModel.AboutMe,
-                UserId = userId,
-                TownId = producerFormModel.TownId,
+            var producer = mapper.Map<Producer>(producerFormModel);
 
-            };
+            producer.UserId = userId;
 
             data.Producers.Add(producer);
 
@@ -85,18 +86,6 @@ namespace LocalMarket.Controllers
             return View(producers);
         }
 
-        private IEnumerable<TownViewModel> GetTowns()
-        {
-            var towns = data.Towns
-                                    .Select(t => new TownViewModel
-                                    {
-                                        Id = t.Id,
-                                        Name = t.Name
-                                    })
-                                  .OrderBy(t => t.Name)
-                                  .ToList();
-
-            return towns;
-        }
+       
     }
 }

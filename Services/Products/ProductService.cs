@@ -3,6 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using LocalMarket.Data.Models;
+using LocalMarket.Models.Product.AddProduct;
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using LocalMarket.Models.Product.AllProducts;
 
 namespace LocalMarket.Services.Products
 {
@@ -10,12 +14,29 @@ namespace LocalMarket.Services.Products
     {
         private readonly LocalMarketDbContext data;
 
-        public ProductService(LocalMarketDbContext dbContext)
+        private readonly IMapper mapper;
+
+        public ProductService(LocalMarketDbContext dbContext, IMapper automapper)
         {
             data = dbContext;
+            mapper = automapper;
         }
 
-        public AllProductsServiceSearchModel GetProducts(string keyword, int currPage)
+        public ProductServiceModel GetProductById(int productId)
+        {
+            var productFromDB = data.Products
+               .Where(p => p.Id == productId).FirstOrDefault();
+
+
+            var productToEdit = mapper.Map<ProductServiceModel>(productFromDB);
+
+            productToEdit.Categories = GetProductCategories();
+            productToEdit.Units = GetProductUnits();
+
+            return (productToEdit);
+        }
+
+        public AllProductsServiceSearchModel GetAllProducts(string keyword, int currPage)
         {
             var productsAsQuaryable = data.Products.AsQueryable();
 
@@ -36,7 +57,7 @@ namespace LocalMarket.Services.Products
                                    Name = p.Name,
                                    Description = p.Description,
                                    Price = p.Price,
-                                   Unit = p.Unit.Name,
+                                   UnitName = p.Unit.Name,
                                    ImageUrl = p.ImageUrl
                                })
                                 .ToList();
@@ -49,6 +70,25 @@ namespace LocalMarket.Services.Products
             };
 
             return searchProducts;
+        }
+
+        public IEnumerable<ProductServiceModel> GetProductsByUserId(string userId)
+        {
+            var products = data.Products
+                              .OrderBy(p => p.Name)
+                              .Where(p => p.Producer.UserId == userId)
+                              .Select(p => new ProductServiceModel  
+                              {
+                                  Id = p.Id,
+                                  Name = p.Name,
+                                  Description = p.Description,
+                                  Price = p.Price,
+                                  UnitName = p.Unit.Name,
+                                  ImageUrl = p.ImageUrl
+                              })
+                               .ToList();
+
+            return (products);
         }
 
         public IEnumerable<UnitServiceModel> GetProductUnits()
@@ -87,39 +127,35 @@ namespace LocalMarket.Services.Products
             return data.Units.Any(c => c.Id == unitId);
         }
 
-        public int Create(string name, string description, decimal price, int unitId, string imageUrl, int categoryId, int producerId)
+        public int Create(ProductFormModel productModel, int producerId)
         {
-            var product = new Product
-            {
-                Name = name,
-                Description = description,
-                Price = price,
-                UnitId = unitId,
-                ImageUrl = imageUrl,
-                CategoryId = categoryId,
-                ProducerId = producerId
-            };
+            var product = mapper.Map<Product>(productModel);
+
+            product.ProducerId = producerId;
+           
 
             data.Products.Add(product);
+
+            data.SaveChanges();
 
             return product.Id;
         }
 
-        public bool Edit(int id, string name, string description, decimal price, int unitId, string imageUrl, int categoryId, int producerId)
+        public bool Edit(int productId, ProductFormModel productModel, int producerId)
         {
-            var productToEdit = data.Products.FirstOrDefault(p => p.Id == id);
+            var productToEdit = data.Products.FirstOrDefault(p => p.Id == productId);
 
             if (productToEdit.ProducerId != producerId)
             {
                 return false;
             }
           
-                productToEdit.Name = name;
-                productToEdit.Description = description;
-                productToEdit.Price = price;
-                productToEdit.CategoryId = categoryId;
-                productToEdit.UnitId = unitId;
-                productToEdit.ImageUrl = imageUrl;
+                productToEdit.Name = productModel.Name;
+                productToEdit.Description = productModel.Description;
+                productToEdit.Price = productModel.Price;
+                productToEdit.CategoryId = productModel.CategoryId;
+                productToEdit.UnitId = productModel.UnitId;
+                productToEdit.ImageUrl = productModel.ImageUrl;
 
             data.SaveChanges();
 

@@ -1,4 +1,5 @@
-﻿using LocalMarket.Data;
+﻿using AutoMapper;
+using LocalMarket.Data;
 using LocalMarket.Data.Models;
 using LocalMarket.Infrastructure;
 using LocalMarket.Models.Product.AddProduct;
@@ -8,6 +9,7 @@ using LocalMarket.Services.Products;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace LocalMarket.Controllers
@@ -20,11 +22,14 @@ namespace LocalMarket.Controllers
 
         private readonly IProductService productService;
 
-        public ProductController(LocalMarketDbContext dbcontext, IProducerService _producerService, IProductService _productService)
+        private readonly IMapper mapper;
+
+        public ProductController(LocalMarketDbContext dbcontext, IProducerService _producerService, IProductService _productService, IMapper automapper)
         {
             data = dbcontext;
             producerService = _producerService;
             productService = _productService;
+            mapper = automapper;
         }
 
         [Authorize]
@@ -67,6 +72,7 @@ namespace LocalMarket.Controllers
             {
                 productModel.Categories = productService.GetProductCategories();
                 productModel.Units = productService.GetProductUnits();
+
                 return View(productModel);
             }
 
@@ -77,14 +83,8 @@ namespace LocalMarket.Controllers
                 return RedirectToAction("Create", "Producer");
             }
 
-                productService.Create(productModel.Name,
-                productModel.Description,
-                productModel.Price,
-                productModel.UnitId,
-                productModel.ImageUrl,
-                productModel.CategoryId,
-                producerId
-                );
+
+            productService.Create(productModel, producerId);
 
             return RedirectToAction("Index", "Home");
 
@@ -98,38 +98,21 @@ namespace LocalMarket.Controllers
                 return Redirect("/Producer/Create");
             }
 
-           
-            var product = data.Products
-                .Where(p => p.Id == productId)
-                .Select(p => new ProductFormModel
-                {
-                    Name = p.Name,
-                    Description = p.Description,
-                    Price = p.Price,
-                    ImageUrl = p.ImageUrl,
-                    UnitId = p.UnitId,
-                    UnitName = p.Unit.Name,
-                    CategoryId = p.CategoryId,
-                    CategoryName = p.Category.Name,
-                    ProducerId = p.ProducerId
-                })
-                .FirstOrDefault();
+            var product = productService.GetProductById(productId);
+            var productModel = mapper.Map<ProductFormModel>(product);
 
-            product.Categories = productService.GetProductCategories();
-            product.Units = productService.GetProductUnits();
-
-            return View(product);
+            return View(productModel);
         }
 
         [Authorize]
         [HttpPost]
-        public IActionResult Edit(int productId, ProductFormModel productModel)
+        public IActionResult Edit([FromQuery] int productId, [FromForm] ProductFormModel productModel)
         {
             if (!producerService.IsProducer(User.GetId()) && User.IsInRole("Admin"))
             {
                 return Redirect("/Producer/Create");
             }
-           
+
             if (!productService.CategoryExist(productModel.CategoryId))
             {
                 ModelState.AddModelError("CategoryId", "Category is not valid");
@@ -147,20 +130,20 @@ namespace LocalMarket.Controllers
                 return View(productModel);
             }
 
-         int producerId = producerService.GetProducerById(User.GetId());
+            int producerId = producerService.GetProducerById(User.GetId());
 
-            var successfulEdited = productService.Edit(productId, productModel.Name,productModel.Description,productModel.Price, productModel.UnitId, productModel.ImageUrl, productModel.CategoryId, producerId );
+            var successfulEdited = productService.Edit(productId, productModel, producerId);
 
             if (!successfulEdited)
             {
                 return BadRequest();
             }
 
-            return RedirectToAction("Mine", "Product", new { userId=User.GetId()});
+            return RedirectToAction("Mine", "Product", new { userId = User.GetId() });
         }
 
         [Authorize]
-        
+
         public IActionResult Delete(int productId)
         {
             if (!producerService.IsProducer(User.GetId()) && User.IsInRole("Admin"))
@@ -169,7 +152,7 @@ namespace LocalMarket.Controllers
             }
 
             productService.Delete(productId);
-            
+
 
             return RedirectToAction("Mine", "Product", new { userId = User.GetId() });
         }
@@ -203,7 +186,7 @@ namespace LocalMarket.Controllers
             {
                 Keyword = searchModel.Keyword,
                 Products = products,
-                TotalPages = (int)Math.Ceiling((double)totalProducts / Services.Products.AllProductsServiceSearchModel.ProductsPerPage)
+                TotalPages = (int)Math.Ceiling((double)totalProducts / AllProductsServiceSearchModel.ProductsPerPage)
 
             };
             return View(searchProducts);
@@ -212,29 +195,11 @@ namespace LocalMarket.Controllers
         [Authorize]
         public IActionResult Mine(string userId)
         {
-            var products = data.Products
-                              .OrderBy(p => p.Name)
-                              .Where(p=>p.Producer.UserId == userId)
-                              .Select(p => new ProductViewModel
-                              {
-                                  Id = p.Id,
-                                  Name = p.Name,
-                                  Description = p.Description,
-                                  Price = p.Price,
-                                  Unit = p.Unit.Name,
-                                  ImageUrl = p.ImageUrl
-                              })
-                               .ToList();
+            var products = productService.GetProductsByUserId(userId);
 
-            return View(products);
+            var productsView = mapper.Map<IEnumerable<ProductViewModel>>(products);
+
+            return View(productsView);
         }
-
-       
-
-     
-
-      
-
-
     }
 }

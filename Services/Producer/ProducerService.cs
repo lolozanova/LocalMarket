@@ -1,6 +1,8 @@
-﻿using LocalMarket.Data;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using LocalMarket.Data;
+using LocalMarket.Models.Producer;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace LocalMarket.Services.Producer
@@ -9,13 +11,16 @@ namespace LocalMarket.Services.Producer
     {
         private readonly LocalMarketDbContext data;
 
-        public ProducerService(LocalMarketDbContext dbContext)
+        private readonly IMapper mapper;
+
+        public ProducerService(LocalMarketDbContext dbContext, IMapper automapper)
         {
-             data= dbContext;
+            data = dbContext;
+            mapper = automapper;
         }
         public bool IsProducer(string userId)
         {
-           return data.Producers.Any(p => p.UserId == userId);
+            return data.Producers.Any(p => p.UserId == userId);
         }
 
         public int GetProducerById(string userId)
@@ -27,6 +32,21 @@ namespace LocalMarket.Services.Producer
                          .FirstOrDefault();
 
             return producerId;
+        }
+
+        public bool TownExists(int townId)
+        {
+            return data.Towns.Any(c => c.Id == townId);
+        }
+
+        public IEnumerable<TownViewModel> GetTowns()
+        {
+            var towns = data.Towns
+                                  .OrderBy(t => t.Name)
+                                  .ProjectTo<TownViewModel>(mapper.ConfigurationProvider)
+                                  .ToList();
+
+            return towns;
         }
     }
 

@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Linq;
+using AutoMapper;
 using LocalMarket.Data;
 using LocalMarket.Models;
 using LocalMarket.Models.Home;
@@ -13,22 +14,23 @@ namespace LocalMarket.Controllers
     public class HomeController : Controller
     {
         private readonly IStatisticService statisticService;
-        public HomeController(IStatisticService statistic)
+
+        private readonly IMapper mapper;
+
+        public HomeController(IStatisticService statistic, IMapper automapper)
         {
-            
+
             statisticService = statistic;
+            mapper = automapper;
         }
 
         public IActionResult Index()
         {
             var statistics = statisticService.GetStatistic();
 
-            return View(new IndexViewModel
-                                  {
-                                      ProductsCount = statistics.ProductsCount,
-                                      ProducersCount = statistics.ProducersCount,
-                                      TownsCount = statistics.TownsCount
-                                  });
+            var indexView = mapper.Map<IndexViewModel>(statistics);
+
+            return View(indexView);
         }
 
         public IActionResult AboutUs()

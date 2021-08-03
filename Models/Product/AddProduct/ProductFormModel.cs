@@ -7,6 +7,8 @@ namespace LocalMarket.Models.Product.AddProduct
 {
     public class ProductFormModel
     {
+        public int Id { get; init; }
+
         [Required]
         [MaxLength(NameMaxLength)]
         public string Name { get; init; }
