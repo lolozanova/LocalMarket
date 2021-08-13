@@ -23,7 +23,7 @@ namespace LocalMarket.Services.Producer
             return data.Producers.Any(p => p.UserId == userId);
         }
 
-        public int GetProducerById(string userId)
+        public int GetProducerIdByUserId(string userId)
         {
             var producerId = this.data
                          .Producers
@@ -32,6 +32,24 @@ namespace LocalMarket.Services.Producer
                          .FirstOrDefault();
 
             return producerId;
+        }
+
+        public ProducerServiceModel GetProducer(string userId)
+        {
+            var producerId = GetProducerIdByUserId(userId);
+
+            var producer = data.Producers
+                            .Where(p => p.Id == producerId)
+                            .Select(p => new ProducerServiceModel
+                            {
+                                CompanyName = p.CompanyName,
+                                AboutMe = p.AboutMe,
+                                Town = p.Town.Name
+                            })
+                            .FirstOrDefault();
+
+            return (producer);
+                
         }
 
         public bool TownExists(int townId)

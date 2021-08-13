@@ -41,6 +41,8 @@ namespace LocalMarket
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<LocalMarketDbContext>();
 
+            services.AddMemoryCache();
+
             services.AddAutoMapper(typeof(Startup));
 
             services.AddControllersWithViews(options =>

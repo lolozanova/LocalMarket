@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using LocalMarket.Services.Products;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LocalMarket.Areas.Admin.Controllers
@@ -7,9 +8,25 @@ namespace LocalMarket.Areas.Admin.Controllers
     [Authorize(Roles = "Admin")]
     public class ProductsController : Controller
     {
-        public IActionResult Index()
+        private readonly IProductService productService;
+
+        public ProductsController(IProductService service)
         {
-            return View();
+            productService = service;
         }
+        public IActionResult Manage()
+        {
+           var allProducts = productService.GetAllProducts(1,null, false);
+
+            return View(allProducts);
+        }
+
+        public IActionResult Approve(int productId)
+        {
+            productService.ApproveProduct(productId);
+
+            return RedirectToAction("Manage", "Products");
+        }
+
     }
 }

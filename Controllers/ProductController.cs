@@ -76,7 +76,7 @@ namespace LocalMarket.Controllers
                 return View(productModel);
             }
 
-            var producerId = producerService.GetProducerById(User.GetId());
+            var producerId = producerService.GetProducerIdByUserId(User.GetId());
 
             if (producerId == 0)
             {
@@ -86,7 +86,9 @@ namespace LocalMarket.Controllers
 
             productService.Create(productModel, producerId);
 
-            return RedirectToAction("Index", "Home");
+            TempData["GlobalMessage"] = "I have successfully added a product";
+
+            return RedirectToAction("Mine", "Product", new { userId = User.GetId() });
 
         }
 
@@ -130,7 +132,7 @@ namespace LocalMarket.Controllers
                 return View(productModel);
             }
 
-            int producerId = producerService.GetProducerById(User.GetId());
+            int producerId = producerService.GetProducerIdByUserId(User.GetId());
 
             var successfulEdited = productService.Edit(productId, productModel, producerId);
 
@@ -138,28 +140,30 @@ namespace LocalMarket.Controllers
             {
                 return BadRequest();
             }
+            TempData["GlobalMessage"] = "You have successfully edited a product";
 
-            return RedirectToAction("Mine", "Product", new { userId = User.GetId() });
+            return RedirectToAction("Mine", "Product", new { userId = User.GetId()});
         }
 
         [Authorize]
 
         public IActionResult Delete(int productId)
         {
-            if (!producerService.IsProducer(User.GetId()) && User.IsInRole("Admin"))
+            if (!producerService.IsProducer(User.GetId()) && !User.IsInRole("Admin"))
             {
                 return Redirect("/Producer/Create");
             }
 
             productService.Delete(productId);
 
+            TempData["GlobalMessage"] = "You have successfully deleted the product";
 
             return RedirectToAction("Mine", "Product", new { userId = User.GetId() });
         }
 
         public IActionResult All(AllProductsServiceSearchModel searchModel)
         {
-            var productsAsQuaryable = data.Products.AsQueryable();
+            var productsAsQuaryable = data.Products.Where(p=>p.IsApproved == true);
 
             if (!string.IsNullOrEmpty(searchModel.Keyword))
             {
@@ -174,6 +178,7 @@ namespace LocalMarket.Controllers
                                .Take(AllProductsSearchModel.ProductsPerPage)
                                .Select(p => new ProductViewModel
                                {
+                                   Id = p.Id,
                                    Name = p.Name,
                                    Description = p.Description,
                                    Price = p.Price,
@@ -200,6 +205,13 @@ namespace LocalMarket.Controllers
             var productsView = mapper.Map<IEnumerable<ProductViewModel>>(products);
 
             return View(productsView);
+        }
+
+        public IActionResult Details(int productId)
+        {
+           var product = productService.GetProductById(productId);
+
+            return View(product);
         }
     }
 }

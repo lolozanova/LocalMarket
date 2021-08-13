@@ -30,11 +30,13 @@ namespace LocalMarket.Data
 
         public class Producer
         {
-            public const int NameMaxLength = 25;
+          
 
-            public const int NameMinLength = 3;
+           public const int CompanyMaxLength = 25;
 
             public const string PhoneNumberRegex = @"^[0-9]{10}$";
+
+
 
         }
 

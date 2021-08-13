@@ -24,21 +24,40 @@ namespace LocalMarket.Services.Products
 
         public ProductServiceModel GetProductById(int productId)
         {
-            var productFromDB = data.Products
-               .Where(p => p.Id == productId).FirstOrDefault();
+            var product = data.Products
+               .Where(p => p.Id == productId)
+               .Select(p => new ProductServiceModel
+               {
+                   Name = p.Name,
+                   Description = p.Description,
+                   Price = p.Price,
+                   ImageUrl = p.ImageUrl,
+                   CategoryId = p.CategoryId,
+                   UnitId = p.UnitId,
+                   ProducerId = p.ProducerId,
+                   ProducerName = p.Producer.CompanyName,
+                   IsApproved = p.IsApproved
+               })
+               .FirstOrDefault();
 
+            product.Categories = GetProductCategories();
+            product.Units = GetProductUnits();
 
-            var productToEdit = mapper.Map<ProductServiceModel>(productFromDB);
+            data.SaveChanges();
 
-            productToEdit.Categories = GetProductCategories();
-            productToEdit.Units = GetProductUnits();
-
-            return (productToEdit);
+            return (product);
         }
 
-        public AllProductsServiceSearchModel GetAllProducts(string keyword, int currPage)
+        public void ApproveProduct(int productId)
         {
-            var productsAsQuaryable = data.Products.AsQueryable();
+            var approvedProduct = data.Products.FirstOrDefault(p => p.Id == productId);
+            approvedProduct.IsApproved = true;
+
+            data.SaveChanges();
+        }
+        public AllProductsServiceSearchModel GetAllProducts(int currPage, string keyword = null, bool publicOnly = true)
+        {
+            var productsAsQuaryable = data.Products.Where(p => p.IsApproved == publicOnly);
 
             if (!string.IsNullOrEmpty(keyword))
             {
@@ -54,11 +73,14 @@ namespace LocalMarket.Services.Products
                                .Take(AllProductsServiceSearchModel.ProductsPerPage)
                                .Select(p => new ProductServiceModel
                                {
+                                   Id = p.Id,
                                    Name = p.Name,
                                    Description = p.Description,
                                    Price = p.Price,
+                                   CategoryName = p.Category.Name,
                                    UnitName = p.Unit.Name,
-                                   ImageUrl = p.ImageUrl
+                                   ImageUrl = p.ImageUrl,
+                                   IsApproved = p.IsApproved
                                })
                                 .ToList();
 
@@ -77,14 +99,15 @@ namespace LocalMarket.Services.Products
             var products = data.Products
                               .OrderBy(p => p.Name)
                               .Where(p => p.Producer.UserId == userId)
-                              .Select(p => new ProductServiceModel  
+                              .Select(p => new ProductServiceModel
                               {
                                   Id = p.Id,
                                   Name = p.Name,
                                   Description = p.Description,
                                   Price = p.Price,
                                   UnitName = p.Unit.Name,
-                                  ImageUrl = p.ImageUrl
+                                  ImageUrl = p.ImageUrl,
+                                  IsApproved = p.IsApproved
                               })
                                .ToList();
 
@@ -132,7 +155,8 @@ namespace LocalMarket.Services.Products
             var product = mapper.Map<Product>(productModel);
 
             product.ProducerId = producerId;
-           
+            product.IsApproved = false;
+
 
             data.Products.Add(product);
 
@@ -149,22 +173,23 @@ namespace LocalMarket.Services.Products
             {
                 return false;
             }
-          
-                productToEdit.Name = productModel.Name;
-                productToEdit.Description = productModel.Description;
-                productToEdit.Price = productModel.Price;
-                productToEdit.CategoryId = productModel.CategoryId;
-                productToEdit.UnitId = productModel.UnitId;
-                productToEdit.ImageUrl = productModel.ImageUrl;
+
+            productToEdit.Name = productModel.Name;
+            productToEdit.Description = productModel.Description;
+            productToEdit.Price = productModel.Price;
+            productToEdit.CategoryId = productModel.CategoryId;
+            productToEdit.UnitId = productModel.UnitId;
+            productToEdit.ImageUrl = productModel.ImageUrl;
+            productToEdit.IsApproved = false;
 
             data.SaveChanges();
 
             return true;
         }
 
-        public void Delete(int id)
+        public void Delete(int productId)
         {
-            var product = data.Products.FirstOrDefault(p => p.Id == id);
+            var product = data.Products.FirstOrDefault(p => p.Id == productId);
 
             data.Remove(product);
 

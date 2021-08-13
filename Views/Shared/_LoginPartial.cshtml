@@ -13,15 +13,18 @@
 
         var userId = User.GetId();
         var UserIsProducer = service.IsProducer(userId);
+        var isAdministrator = User.IsInRole(WebConstants.adminRole);
 
-        @if (!UserIsProducer && !User.IsInRole("Admin"))
+
+        @if (!UserIsProducer && !isAdministrator)
         {
             <li class="nav-item">
                 <a class="nav-link text-white btn-outline-success my-2 my-sm-0" asp-area="" asp-controller="Producer" asp-action="Create">I'm producer</a>
+              
             </li>
 
         }
-        else if(UserIsProducer && !User.IsInRole("Admin"))
+        else if (UserIsProducer && !User.IsInRole("Admin"))
         {
             <li class="nav-item">
                 <a class="nav-link  text-uppercase text-dark" asp-area="" asp-controller="Product" asp-action="Add">Add Product</a>
@@ -31,7 +34,12 @@
             </li>
 
         }
-
+        @if (User.IsInRole(WebConstants.adminRole))
+        {
+            <li class="nav-item">
+                <a class="nav-link text-uppercase text-dark" asp-area="Admin" asp-controller="Products" asp-action="Manage">Manage</a>
+            </li>
+        }
         <li class="nav-item">
             <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage"><i class="fas fa-user"></i></a>
         </li>
@@ -40,6 +48,7 @@
                 <button type="submit" class="nav-link btn btn-link text-dark"><i class="fas fa-sign-out-alt fa-lg"></i></button>
             </form>
         </li>
+
     }
     else
     {

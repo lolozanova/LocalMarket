@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace LocalMarket.Services.Products
 {
@@ -30,5 +27,9 @@ namespace LocalMarket.Services.Products
         public IEnumerable<CategoryServiceModel> Categories { get; set; }
 
         public int ProducerId { get; init; }
+
+        public string ProducerName { get; set; }
+
+        public bool IsApproved { get; set; }
     }
 }

@@ -42,5 +42,7 @@ namespace LocalMarket.Models.Product.AddProduct
 
         public int ProducerId { get; set; }
 
+        public bool IsApproved { get; set; } 
+
     }
 }

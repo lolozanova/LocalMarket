@@ -70,20 +70,40 @@ namespace LocalMarket.Controllers
 
             data.SaveChanges();
 
+            TempData["GlobalMessage"] = "You have successfully became a dealer";
+
             return RedirectToAction("Add", "Product");
         }
 
         public IActionResult All()
         {
+          
            var producers = data.Producers.Select(p => new ProducerViewModel
             {
-                FullName = p.FirstName + " " + p.LastName,
+                CompanyName = p.CompanyName,
                 Town = p.Town.Name,
                 AboutMe = p.AboutMe,
+                UserId = p.UserId
 
             }).ToList();
 
             return View(producers);
+        }
+
+        public IActionResult Details(int producerId)
+        {
+            var producer = data.Producers
+                              .Where(p => p.Id == producerId)
+                              .Select(p => new ProducerServiceModel
+                              {
+                                  CompanyName = p.CompanyName,
+                                  AboutMe = p.AboutMe,
+                                  Town = p.Town.Name
+                              })
+                              .FirstOrDefault();
+
+
+            return View(producer);
         }
 
        

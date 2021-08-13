@@ -8,19 +8,22 @@
         {
             <div class="col-3">
                 <div class="card bg-light">
-                    <img class="card-img-top" src="@product.ImageUrl" alt="@product.Name">
+                    <img class="img-thumbnail" src="@product.ImageUrl" alt="@product.Name">
                     <div class="card-body">
                         <h5 class="card-title">@product.Name</h5>
-                        <p class="card-text">@product.Price  &euro;/@product.Unit </p>
-
+                        <p class="card-t
+                           ext">@product.Price  &euro;/@product.Unit </p>
+                       
                         @if (ViewBag.IsProducer == true || User.IsInRole("Admin"))
                         {
-                            <a asp-controller="Product" asp-action="Edit" asp-route-productId=@product.Id  class="btn btn-outline-success">Edit</a>
+                            <a asp-controller="Product" asp-action="Edit" asp-route-productId=@product.Id class="btn btn-outline-success">Edit</a>
                             <a asp-controller="Product" asp-action="Delete" asp-route-productId=@product.Id class="btn btn-outline-danger">Delete</a>
                         }
                         else
                         {
                             <a href="#" class="btn btn-outline-success">Add to basket</a>
+                            <a asp-controller="Product" asp-action="Details" asp-route-productId=@product.Id class="btn btn-outline-success">Details</a>
+
                         }
                     </div>
                 </div>

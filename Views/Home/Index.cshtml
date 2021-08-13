@@ -4,6 +4,7 @@
 
 @model IndexViewModel
 
+<partial name="_AllertMessage"/>
 
 <section class="text-center text-dark font-italic">
     <div class="mb-5"></div>
@@ -12,10 +13,10 @@
             <h3 class="display-4 ">Taste our <span class="text-success font-weight-bolder">fresh </span> products from local producers</h3>
             <div class="mb-5"></div>
             <p class="lead">
-                We are a free platform who is trying to connect local farmers with their customers. Our goal is to encourage people buying from small local producers. Why? First - because local products are healthier and fresher.  Second - because we want to give a chance to the local farmers, who are facing big difficulties
+                We are a free platform who is trying to connect local farmers with their customers. Our goal is to encourage people buying from small local producers. Why? First - because products from local farmers are healthier and fresher.  Second - because we want to support local producers and economy
             </p>
             <hr class="my-4">
-            <p>We work currently with @Model.ProducersCount farmers and growers and we offer @Model.ProductsCount products in @Model.TownsCount towns </p>
+            <p>We work currently with <span class="font-weight-bold">@Model.ProducersCount farmers </span> and we offer <span class="font-weight-bold">@Model.ProductsCount products</span> in <span class="font-weight-bold">@Model.TownsCount towns </span></p>
             <hr class="my-4">
             <p class="lead">
                 <a class="btn btn-primary btn-lg" asp-controller="Product" asp-action="All" role="button">See all products</a>

@@ -18,12 +18,8 @@ namespace LocalMarket.Data.Models
         public int Id { get; set; }
 
         [Required]
-        [MaxLength(NameMaxLength)]
-        public string FirstName { get; set; }
-
-        [Required]
-        [MaxLength(NameMaxLength)]
-        public string LastName { get; set; }
+        [MaxLength(CompanyMaxLength)]
+        public string CompanyName { get; set; }
 
         [Required]
         public string AboutMe { get; set; }

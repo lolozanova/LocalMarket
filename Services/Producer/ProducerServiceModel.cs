@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace LocalMarket.Models.Producer.All
+namespace LocalMarket.Services.Producer
 {
-    public class ProducerViewModel
+    public class ProducerServiceModel
     {
-   
+
         public string CompanyName { get; init; }
 
         public string AboutMe { get; init; }
@@ -17,6 +17,5 @@ namespace LocalMarket.Models.Producer.All
         public string Town { get; init; }
 
         public string UserId { get; init; }
-
     }
 }

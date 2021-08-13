@@ -11,7 +11,9 @@ namespace LocalMarket.Services.Producer
 
         public bool IsProducer(string userId);
 
-        public int GetProducerById(string userId);
+        public int GetProducerIdByUserId(string userId);
+
+        public ProducerServiceModel GetProducer(string userId);
 
         public bool TownExists(int townId);
 

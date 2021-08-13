@@ -1,0 +1,14 @@
+﻿@model ProductServiceModel
+
+@{
+    ViewBag.Title = "Edit Product";
+}
+<div class="mt-3"></div>
+<div class="jumbotron jumbotron-fluid col-9">
+    <div class="container">
+        <h4 class="display-4">@Model.Name</h4>
+        <img src="@Model.ImageUrl" class="img-fluid" alt="@Model.Name">
+        <p class="lead">@Model.Description</p>
+        <p>This product is offered by <a asp-controller="Producer" asp-action="Details" asp-route-producerId="@Model.ProducerId"> @Model.ProducerName </a> </p>
+    </div>
+</div>

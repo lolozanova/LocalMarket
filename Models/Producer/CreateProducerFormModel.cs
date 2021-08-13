@@ -9,13 +9,9 @@ namespace LocalMarket.Models.Producer
     public class CreateProducerFormModel
     {
         [Required]
-        [StringLength(NameMaxLength, MinimumLength = NameMinLength)]
-        public string FirstName { get; set; }
-
-        [Required]
-        [StringLength(NameMaxLength, MinimumLength= NameMinLength)]
-        public string LastName { get; set; }
-
+        [MaxLength(CompanyMaxLength)]
+        public string CompanyName { get; set; }
+ 
         [Required]
          [RegularExpression(PhoneNumberRegex, ErrorMessage = "Invalid phone number. It starts with +359 and is followed by 9 digits")]
          [Display(Name = "Phone Number")]

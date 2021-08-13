@@ -37,5 +37,7 @@ namespace LocalMarket.Data.Models
 
         public Category Category { get; init; }
 
+        public bool IsApproved { get; set; }
+
     }
 }

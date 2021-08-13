@@ -10,7 +10,7 @@ namespace LocalMarket.Services.Products
     {
         public ProductServiceModel GetProductById(int productId);
 
-        public AllProductsServiceSearchModel GetAllProducts(string keyword, int currPage);
+        public AllProductsServiceSearchModel GetAllProducts(int currPage, string keyword, bool publicOnly);
 
         public IEnumerable<ProductServiceModel> GetProductsByUserId(string userId);
 
@@ -18,6 +18,8 @@ namespace LocalMarket.Services.Products
 
 
         public IEnumerable<CategoryServiceModel> GetProductCategories();
+
+        public void ApproveProduct(int productId);
 
         public bool CategoryExist(int categoryId);
 

@@ -118,12 +118,12 @@ namespace LocalMarket.Infrastructure
 
             Task.Run(async () =>
             {
-                if (await roleManager.RoleExistsAsync("Admin"))
+                if (await roleManager.RoleExistsAsync(WebConstants.adminRole))
                 {
                     return;
                 }
 
-                var role = new IdentityRole { Name = "Admin" };
+                var role = new IdentityRole { Name = WebConstants.adminRole };
 
                 await roleManager.CreateAsync(role);
 

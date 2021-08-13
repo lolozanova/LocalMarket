@@ -1,18 +1,19 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+
+using static LocalMarket.Data.DataConstants.User;
+
 
 namespace LocalMarket.Data.Models
 {
     public class User: IdentityUser
     {
         [Required]
+        [StringLength(FirstNameMaxLength, MinimumLength = FirstNameMinLength)]
         public string  FirstName { get; set; }
 
         [Required]
+        [StringLength(LastNameMaxLength, MinimumLength = LastNameMinLength)]
         public string LastName { get; set; }
 
     }
